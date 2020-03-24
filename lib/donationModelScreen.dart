@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_scoped_model/Model/donationModel.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 
 class DonationModelScreen extends StatefulWidget {
@@ -30,7 +32,15 @@ class _DonationModelScreenState extends State<DonationModelScreen> {
               ),
               shadowColor: Color(0x802196f3),
 
-              child: _buildInitContent(),
+              child: ScopedModelDescendant<DonationModel>(
+                builder: (context,child,model){
+                  if (model.donateClicked) {
+                    return _buildContent(model);
+                  }else{
+                    return _buildInitContent(model);
+                  }
+                },
+              ),
 
             )
           ],
@@ -41,7 +51,7 @@ class _DonationModelScreenState extends State<DonationModelScreen> {
 
 
 
-  Widget _buildContent(){
+  Widget _buildContent(DonationModel model){
     return Align(
       alignment: Alignment.bottomCenter,
       child: Container(
@@ -49,16 +59,15 @@ class _DonationModelScreenState extends State<DonationModelScreen> {
         height: MediaQuery.of(context).size.height * 0.40,
         child: Column(
           children: <Widget>[
-            _thankYouText(),
-            _backButton(),
+            _thankYouText(model),
+            _backButton(model),
           ],
         ),
       ),
     );
   }
 
-
-  Widget _thankYouText(){
+  Widget _thankYouText(DonationModel model){
     return Padding(
       padding: EdgeInsets.only(top: 10,left: 20,bottom: 10),
       child: Column(
@@ -76,7 +85,7 @@ class _DonationModelScreenState extends State<DonationModelScreen> {
           SizedBox(height: 10,),
 
           Text(
-            'Thank You for Donating \u0024 ',
+            'Thank You for Donating \u0024 ${model.count}',
             style: TextStyle(
                 color: Colors.blueGrey,
                 fontSize: 16,
@@ -91,7 +100,7 @@ class _DonationModelScreenState extends State<DonationModelScreen> {
     );
   }
 
-  Widget _backButton(){
+  Widget _backButton(DonationModel model){
     return Padding(
       padding: EdgeInsets.only(top: 25, left: 10, right: 10),
       child: Column(
@@ -110,7 +119,9 @@ class _DonationModelScreenState extends State<DonationModelScreen> {
                 ],
               ),
             ),
-            onPressed: (){},
+            onPressed: (){
+              model.donateClicked = false;
+            },
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(30)
             ),
@@ -122,7 +133,7 @@ class _DonationModelScreenState extends State<DonationModelScreen> {
 
 
 
-  Widget _buildInitContent(){
+  Widget _buildInitContent(DonationModel model){
     return Align(
       alignment: Alignment.bottomCenter,
       child: Container(
@@ -131,8 +142,8 @@ class _DonationModelScreenState extends State<DonationModelScreen> {
         child: Column(
           children: <Widget>[
             _titleContainer(),
-            _priceContainer(),
-            _donateContainer(),
+            _priceContainer(model),
+            _donateContainer(model),
           ],
         ),
       ),
@@ -190,14 +201,16 @@ class _DonationModelScreenState extends State<DonationModelScreen> {
     );
   }
 
-  Widget _priceContainer(){
+  Widget _priceContainer(DonationModel model){
     return Padding(
       padding: EdgeInsets.all(15),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           RawMaterialButton(
-            onPressed: (){},
+            onPressed: (){
+              model.decrement();
+            },
             child: Icon(Icons.file_download, color: Colors.orange,size: 30,),
             shape: CircleBorder(),
             elevation: 2.0,
@@ -205,10 +218,12 @@ class _DonationModelScreenState extends State<DonationModelScreen> {
             padding: EdgeInsets.all(10),
           ),
 
-          Text('\u0024 50', style: TextStyle(fontSize: 44,color: Colors.black),),
+          Text('\u0024 ${model.count}', style: TextStyle(fontSize: 44,color: Colors.black),),
 
           RawMaterialButton(
-            onPressed: (){},
+            onPressed: (){
+              model.increment();
+            },
             child: Icon(Icons.file_upload, color: Colors.orange,size: 30,),
             shape: CircleBorder(),
             elevation: 2.0,
@@ -221,7 +236,7 @@ class _DonationModelScreenState extends State<DonationModelScreen> {
     );
   }
 
-  Widget _donateContainer(){
+  Widget _donateContainer(DonationModel model){
     return Padding(
       padding: EdgeInsets.only(top: 25, left: 10, right: 10),
       child: Column(
@@ -240,7 +255,9 @@ class _DonationModelScreenState extends State<DonationModelScreen> {
                 ],
               ),
             ),
-onPressed: (){},
+            onPressed: (){
+              model.donateClicked = true;
+            },
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(30)
             ),
